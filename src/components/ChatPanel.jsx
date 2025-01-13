@@ -2,6 +2,7 @@ import { useState,useEffect } from 'react'
 import '../index.css'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { hostUrl } from '../../config'
 
 const ChatPanel = () => {
     const [messages,setMessages] = useState([]);
@@ -35,6 +36,9 @@ const ChatPanel = () => {
     //      console.log("Error fetching messages:", error);
     //    });
 
+        
+       
+
                                                                 //GET the FriendList from backend +++++++++++++++++++
         const token = localStorage.getItem('access');
         setUser(localStorage.getItem('fn'))
@@ -43,10 +47,12 @@ const ChatPanel = () => {
         setFriendList(fList);
         console.log("Friendlist: ")
         console.log(fList);
-
+        //Initialize the recipient as the first friend or friendlist[0]
+        setRecipientId(fList[0].id)
+        setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`);
 
         //Create websocket connection
-        const socket = new WebSocket(`ws://127.0.0.1:8000/ws/socketserver/?token=${token}`);
+        const socket = new WebSocket(`ws://${hostUrl}/ws/socketserver/?token=${token}`);
         setWs(socket);
         socket.onopen = () => {
           console.log("WebSocket connection established");
