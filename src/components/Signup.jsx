@@ -14,7 +14,7 @@ const Signup = () => {
     const handleSignup = async (e) =>{
             e.preventDefault();
             try{
-                const response = await fetch(hostUrl+'signup',{
+                const response = await fetch('http://'+hostUrl+'/signup',{
                     method: "POST",
                     headers: {
                         "Content-Type" : 'application/json'

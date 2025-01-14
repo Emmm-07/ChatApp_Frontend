@@ -24,33 +24,23 @@ const ChatPanel = () => {
         localStorage.clear();
         navigate("/login");
     }
+   
     useEffect(()=>{
-    //    Fetch messages from the API on load
-    //    axios.get('/api/messages/')
-    //    .then(response => {
-    //     console.log("DATA: " )
-    //     console.log(response.data);
-    //     //  setMessages(response.data); // Use response.data directly
-    //    })
-    //    .catch(error => {
-    //      console.log("Error fetching messages:", error);
-    //    });
-
-        
-       
+   
+          const token = localStorage.getItem('access');
+          setUser(localStorage.getItem('fn'))
+          var fList = localStorage.getItem('friendList');
+          fList = JSON.parse(fList);
+          setFriendList(fList);
+          console.log("Friendlist: ")
+          console.log(fList);
+          //Initialize the recipient as the first friend or friendlist[0]
+          setRecipientId(fList[0].id)
+          setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`); 
 
                                                                 //GET the FriendList from backend +++++++++++++++++++
-        const token = localStorage.getItem('access');
-        setUser(localStorage.getItem('fn'))
-        var fList = localStorage.getItem('friendList');
-        fList = JSON.parse(fList);
-        setFriendList(fList);
-        console.log("Friendlist: ")
-        console.log(fList);
-        //Initialize the recipient as the first friend or friendlist[0]
-        setRecipientId(fList[0].id)
-        setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`);
-
+        
+        
         //Create websocket connection
         const socket = new WebSocket(`ws://${hostUrl}/ws/socketserver/?token=${token}`);
         setWs(socket);
@@ -89,6 +79,22 @@ const ChatPanel = () => {
         
         return () => socket.close();
     },[])
+
+    useEffect(()=>{
+        //    Fetch messages from the API on load
+        axios.get(`http://${hostUrl}/api/messages/personal_message?recipient=${recipientId}`,{
+           headers:{
+               'Content-Type': "application/json",
+               'Authorization': `Bearer ${localStorage.getItem('access')}`,
+           }
+         }).then(response=>{
+           console.log("Data: ");
+           console.log(response.data)
+         }).catch(error=>{
+           console.log("Error fetching messages: "+ error)
+         })
+    },[recipientId])
+
   
     return (  
         <div className='flex h-full border w-full rounded-xl relative'>
