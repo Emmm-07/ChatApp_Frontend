@@ -13,9 +13,10 @@ const ChatPanel = () => {
     const [friendList,setFriendList] = useState([]);
     const [recipientId,setRecipientId] = useState(null);
     const [recipeintName,setRecipientName] = useState(null)
+
     const handleSendMessage = () => {
       if (ws && newMessage.trim()) {
-          ws.send(JSON.stringify({ message: newMessage, user: user, recipientId: recipientId }));   //+++++++++++++++++
+          ws.send(JSON.stringify({ message: newMessage, user: user, recipientId: recipientId }));   
           setNewMessage(''); // Clear the input field
       }   
     };
@@ -25,22 +26,21 @@ const ChatPanel = () => {
         navigate("/login");
     }
    
+
     useEffect(()=>{
    
-          const token = localStorage.getItem('access');
-          setUser(localStorage.getItem('fn'))
-          var fList = localStorage.getItem('friendList');
-          fList = JSON.parse(fList);
-          setFriendList(fList);
-          console.log("Friendlist: ")
-          console.log(fList);
-          //Initialize the recipient as the first friend or friendlist[0]
-          setRecipientId(fList[0].id)
-          setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`); 
+        const token = localStorage.getItem('access');
+        setUser(localStorage.getItem('fn'))
+        var fList = localStorage.getItem('friendList');   //GET the FriendList from backend 
+        fList = JSON.parse(fList);
+        setFriendList(fList);
+        console.log("Friendlist: ")
+        console.log(fList);
+        //Initialize the recipient as the first friend or friendlist[0]
+        setRecipientId(fList[0].id)
+        setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`); 
 
-                                                                //GET the FriendList from backend +++++++++++++++++++
-        
-        
+
         //Create websocket connection
         const socket = new WebSocket(`ws://${hostUrl}/ws/socketserver/?token=${token}`);
         setWs(socket);
@@ -80,8 +80,10 @@ const ChatPanel = () => {
         return () => socket.close();
     },[])
 
+
     useEffect(()=>{
         //    Fetch messages from the API on load
+        if(recipientId!=null){
         axios.get(`http://${hostUrl}/api/messages/personal_message?recipient=${recipientId}`,{
            headers:{
                'Content-Type': "application/json",
@@ -90,9 +92,11 @@ const ChatPanel = () => {
          }).then(response=>{
            console.log("Data: ");
            console.log(response.data)
+           setMessages(response.data);
          }).catch(error=>{
            console.log("Error fetching messages: "+ error)
          })
+        }
     },[recipientId])
 
   
@@ -134,8 +138,8 @@ const ChatPanel = () => {
                 <div className="chatContainer bg-white p-4 rounded shadow-md w-full h-[80%] overflow-y-auto mt-3">
                 {/* Render messages */}
                 {messages.map((msg, idx) => (
-                    <div key={idx} className={`border-b border-gray-300 w-[40%] rounded-lg py-2 my-3 ${msg.user == user? 'bg-blue-500 ml-auto':'bg-gray-500'}`} >
-                    {msg.user}:{msg.message}
+                    <div key={idx} className={`border-b border-gray-300 w-[40%] rounded-lg py-2 my-3 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto':'bg-gray-500'}`} >
+                    {msg.sender_fname}:{msg.message}
                     </div>
                 ))}
                 </div>
