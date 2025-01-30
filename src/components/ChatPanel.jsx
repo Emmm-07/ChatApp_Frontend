@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'
+import { useState,useEffect, useRef } from 'react'
 import '../index.css'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -13,6 +13,7 @@ const ChatPanel = () => {
     const [friendList,setFriendList] = useState([]);
     const [recipientId,setRecipientId] = useState(null);
     const [recipeintName,setRecipientName] = useState(null)
+    const bottomRef = useRef(null);
 
     const handleSendMessage = () => {
       if (ws && newMessage.trim()) {
@@ -90,8 +91,8 @@ const ChatPanel = () => {
                'Authorization': `Bearer ${localStorage.getItem('access')}`,
            }
          }).then(response=>{
-           console.log("Data: ");
-           console.log(response.data)
+        //    console.log("Data: ");
+        //    console.log(response.data)
            setMessages(response.data);
          }).catch(error=>{
            console.log("Error fetching messages: "+ error)
@@ -99,7 +100,29 @@ const ChatPanel = () => {
         }
     },[recipientId])
 
-  
+    
+    useEffect(()=>{
+        if(bottomRef.current){
+            bottomRef.current?.scrollIntoView({ behavior:"auto" })     // behavior:"smooth"  if you want it to scroll down
+        }
+        
+    }, [messages])
+    // useEffect(()=>{
+    // const scrollToSection = (id) => {
+    //     // e.preventDefault();
+    //     const element = document.getElementById(id);
+    //     const offset = 75;
+    //     const offsetPosition = element.offsetTop - offset;
+    
+    //     window.scrollTo({
+    //         top: offsetPosition,
+    //         behavior: 'smooth'
+    //     });
+    // };
+        
+    // })
+    
+
     return (  
         <div className='flex h-full border w-full rounded-xl relative'>
             <div className='border w-[30%] rounded-l-xl p-5 relative space-y-6'>
@@ -142,6 +165,7 @@ const ChatPanel = () => {
                     {msg.sender_fname}:{msg.message}
                     </div>
                 ))}
+                 <div ref={bottomRef} id='bottomDiv'/>{/*  empty div to scroll */}
                 </div>
 
                 <div className="chatBox flex gap-2 mt-4 absolute bottom-4 w-[65%] mr-auto">
@@ -152,7 +176,7 @@ const ChatPanel = () => {
                         className="border p-2 rounded w-full "
                     />
                     <button
-                        onClick={handleSendMessage}
+                        onClick={()=>{handleSendMessage()}}
                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                     >
                         Send
@@ -161,6 +185,7 @@ const ChatPanel = () => {
 
                  
             </div>
+               
         </div>
     );
 }
