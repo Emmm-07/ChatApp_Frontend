@@ -3,6 +3,8 @@ import '../index.css'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { hostUrl } from '../../config'
+import ChatLoadingSkeleton from './Loading/ChatLoadingSkeleton'
+import SendLoading from './Loading/SendLoading'
 
 const ChatPanel = () => {
     const [messages,setMessages] = useState([]);
@@ -13,9 +15,13 @@ const ChatPanel = () => {
     const [friendList,setFriendList] = useState([]);
     const [recipientId,setRecipientId] = useState(null);
     const [recipeintName,setRecipientName] = useState(null)
+    const [isChatsLoading, setIsChatsLoading] = useState(true);
+    const [isStillSending, setIsStillSending] = useState(false);
     const bottomRef = useRef(null);
 
-    const handleSendMessage = () => {
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+        setIsStillSending(true);
       if (ws && newMessage.trim()) {
           ws.send(JSON.stringify({ message: newMessage, user: user, recipientId: recipientId }));   
           setNewMessage(''); // Clear the input field
@@ -35,8 +41,8 @@ const ChatPanel = () => {
         var fList = localStorage.getItem('friendList');   //GET the FriendList from backend 
         fList = JSON.parse(fList);
         setFriendList(fList);
-        console.log("Friendlist: ")
-        console.log(fList);
+        // console.log("Friendlist: ")
+        // console.log(fList);
         //Initialize the recipient as the first friend or friendlist[0]
         setRecipientId(fList[0].id)
         setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`); 
@@ -50,21 +56,22 @@ const ChatPanel = () => {
           };
           
         socket.onmessage = (event) => {
-          try{
-            const msgData =  JSON.parse(event.data);
-            console.log("Message from server: ");
-            console.log(msgData);
-  
-            setMessages((prevMessages)=>{
-              console.log("Previous msg");
-              console.log(prevMessages);
-              return [...prevMessages,msgData];
-            });
-            console.log("success set messages")
-           
-          }catch(error){
-            console.log(error);
-          }
+            setIsStillSending(false);
+            try{
+                const msgData =  JSON.parse(event.data);
+                // console.log("Message from server: ");
+                // console.log(msgData);
+    
+                setMessages((prevMessages)=>{
+                //   console.log("Previous msg");
+                //   console.log(prevMessages);
+                return [...prevMessages,msgData];
+                });
+                console.log("success set messages")
+            
+            }catch(error){
+                console.log(error);
+            }
         
         };
         
@@ -84,6 +91,7 @@ const ChatPanel = () => {
 
     useEffect(()=>{
         //    Fetch messages from the API on load
+        setIsChatsLoading(true);
         if(recipientId!=null){
         axios.get(`http://${hostUrl}/api/messages/personal_message?recipient=${recipientId}`,{
            headers:{
@@ -94,6 +102,7 @@ const ChatPanel = () => {
         //    console.log("Data: ");
         //    console.log(response.data)
            setMessages(response.data);
+           setIsChatsLoading(false);
          }).catch(error=>{
            console.log("Error fetching messages: "+ error)
          })
@@ -106,7 +115,7 @@ const ChatPanel = () => {
             bottomRef.current?.scrollIntoView({ behavior:"auto" })     // behavior:"smooth"  if you want it to scroll down
         }
         
-    }, [messages])
+    }, [messages,isStillSending])
     // useEffect(()=>{
     // const scrollToSection = (id) => {
     //     // e.preventDefault();
@@ -157,31 +166,43 @@ const ChatPanel = () => {
                 <h1 className="text-white text-3xl font-bold">{recipeintName}</h1>
 
                
-
+                
                 <div className="chatContainer bg-white p-4 rounded shadow-md w-full h-[80%] overflow-y-auto mt-3">
                 {/* Render messages */}
-                {messages.map((msg, idx) => (
-                    <div key={idx} className={`border-b border-gray-300 w-[40%] rounded-lg py-2 my-3 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto':'bg-gray-500'}`} >
-                    {msg.sender_fname}:{msg.message}
+                { isChatsLoading ?
+                    <ChatLoadingSkeleton/>
+                    :
+                    messages.map((msg, idx) => (
+                        <div key={idx} className={`border-b border-gray-300 w-[40%] rounded-lg py-2 my-3 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto':'bg-gray-500'}`} >
+                        {msg.sender_fname}:{msg.message}
+                        </div>
+                    ))
+                }
+                
+                
+                <div ref={bottomRef} id='bottomDiv' className=''>
+                    { isStillSending &&
+                        <SendLoading/>
+                    }
+                </div>
+                 
+                </div>
+                <form onSubmit={(e)=>handleSendMessage(e)}>
+                    <div className="chatBox flex gap-2 mt-4 absolute bottom-4 w-[65%] mr-auto">
+                        <input
+                            type="text"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            className="border p-2 rounded w-full "
+                        />
+                        <button
+                            type='submit'
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                            Send
+                        </button>    
                     </div>
-                ))}
-                 <div ref={bottomRef} id='bottomDiv'/>{/*  empty div to scroll */}
-                </div>
-
-                <div className="chatBox flex gap-2 mt-4 absolute bottom-4 w-[65%] mr-auto">
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        className="border p-2 rounded w-full "
-                    />
-                    <button
-                        onClick={()=>{handleSendMessage()}}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
-                        Send
-                    </button>
-                </div>
+                </form>
 
                  
             </div>
