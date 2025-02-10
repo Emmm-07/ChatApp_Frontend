@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { hostUrl } from '../../config'
 import ChatLoadingSkeleton from './Loading/ChatLoadingSkeleton'
 import SendLoading from './Loading/SendLoading'
+import ThemeToggle from './common/themeToggle'
 
 const ChatPanel = () => {
     const [messages,setMessages] = useState([]);
@@ -138,7 +139,7 @@ const ChatPanel = () => {
                 {friendList.map((friend,idx)=>(
                     <>
                     <div key={idx}                                                        
-                        className={`border hover:bg-white flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white':'bg-transparent'}`}
+                        className={`border hover:bg-white  flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white':'bg-transparent'}`}
                         onClick={()=>{
                             setRecipientId(friend.id);
                             setRecipientName(`${friend.first_name} ${friend.last_name}`);
@@ -174,7 +175,7 @@ const ChatPanel = () => {
                     :
                     messages.map((msg, idx) => (
                         <div key={idx} className={`border-b border-gray-300 w-[40%] rounded-lg py-2 my-3 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto':'bg-gray-500'}`} >
-                        {msg.sender_fname}:{msg.message}
+                        &nbsp; {msg.sender_fname}: {msg.message}
                         </div>
                     ))
                 }

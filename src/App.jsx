@@ -6,6 +6,7 @@ import ChatPanel from './components/ChatPanel'
 import Login from './components/Login'
 import Signup from './components/Signup'
 import PrivateRoute from './components/PrivateRoute'
+import ThemeToggle from './components/common/themeToggle'
 // to run on local network: npm run dev -- --host 0.0.0.0  
 
 function App() {
@@ -41,8 +42,12 @@ function App() {
 
   return (
 
-  <div className="App bg-[#333] w-full h-screen content-center">
-    <div className="container bg-red-500 w-[70%] h-[85%] flex flex-col items-center justify-center justify-self-center rounded-xl">
+  <div className="App  dark:bg-[#333] w-full h-screen content-center">
+    <div className="container text-black dark:text-white relative bg-red-500 dark:bg-[#333] w-[70%] h-[85%] flex flex-col items-center justify-center justify-self-center rounded-xl border-2 border-black dark:border-white ">
+    <div className='absolute top-2 -left-[2.35rem] border-2 border-gray-500  border-r-0 dark:border-white rounded-l-3xl hover:bg-gray-200  dark:hover:bg-neutral-800'>
+    <ThemeToggle/>
+    </div>
+    
       <BrowserRouter>
         <Routes>
 
