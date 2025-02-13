@@ -9,16 +9,18 @@ import ThemeToggle from './common/themeToggle'
 import ScrollBar from './common/ScrollBar'
 
 const ChatPanel = () => {
-    const [messages,setMessages] = useState([]);
-    const [newMessage,setNewMessage] = useState('');
-    const [ws,setWs] = useState(null);
-    const [user,setUser] = useState(localStorage.getItem('fn'));
-    const navigate = useNavigate();
-    const [friendList,setFriendList] = useState([]);
-    const [recipientId,setRecipientId] = useState(null);
-    const [recipeintName,setRecipientName] = useState(null)
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState('');
+    const [ws, setWs] = useState(null);
+    const [user, setUser] = useState(localStorage.getItem('fn'));
+    const [friendList, setFriendList] = useState([]);
+    const [recipientId, setRecipientId] = useState(null);
+    const [recipeintName, setRecipientName] = useState(null)
     const [isChatsLoading, setIsChatsLoading] = useState(true);
     const [isStillSending, setIsStillSending] = useState(false);
+    const storedLatestMessages = JSON.parse(localStorage.getItem('lastMessages'))
+    const [lastMessage, setLastMessage] = useState(storedLatestMessages || {})
+    const navigate = useNavigate();
     const bottomRef = useRef(null);
 
     const handleSendMessage = (e) => {
@@ -101,8 +103,21 @@ const ChatPanel = () => {
                'Authorization': `Bearer ${localStorage.getItem('access')}`,
            }
          }).then(response=>{
-           setMessages(response.data);
+           setMessages(response.data.messages);
            setIsChatsLoading(false);
+           console.log("last message: ",response.data.lastMessage)
+           //Set the latest chats per friend
+           setLastMessage((prev)=>{
+                const updated = {
+                    ...prev,
+                    ...response.data.lastMessage,
+                } 
+                // Save to localStorage
+                localStorage.setItem("lastMessages", JSON.stringify(updated));
+
+                return updated;
+            })
+
          }).catch(error=>{
            console.log("Error fetching messages: "+ error)
          })
@@ -125,7 +140,7 @@ const ChatPanel = () => {
                 {/* Chat Friends List */}
                 {friendList.map((friend,idx)=>(
                     <>
-                    <div key={idx}                                                        
+                    <div key={friend.id}                                                        
                         className={`relative hover:bg-white/20  flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
                         onClick={()=>{
                             setRecipientId(friend.id);
@@ -135,10 +150,11 @@ const ChatPanel = () => {
                     >
                         <span className='w-14 h-14 border rounded-full bg-black'></span>
                        
-                        <div className="flex flex-col w-36 border">
+                        <div className="flex flex-col w-36">
                             <span className='font-bold'>{friend.first_name} {friend.last_name}</span>
-                            <span className="text-gray-400 text-sm truncate w-full border">
-                            {messages.length > 0 ? messages[messages.length-1].message : "..."}
+                            <span className="text-gray-400 text-sm truncate w-full ">
+                            {/* {messages.length > 0 ? messages[messages.length-1].message : "..."} */}
+                            {lastMessage[friend.id]}
                             </span>
                         </div>
                     </div>
@@ -150,7 +166,7 @@ const ChatPanel = () => {
                 <h2 className='absolute bottom-20'>{user}</h2>
                 <button
                     onClick={handleLogout}
-                    className="bg-black  mt-11 px-4 py-2 rounded-full hover:bg-blue-600 absolute bottom-6"
+                    className="bg-black text-white mt-11 px-4 py-2 rounded-full hover:bg-blue-600 absolute bottom-6"
                 >
                     Logout
                 </button>
@@ -168,7 +184,7 @@ const ChatPanel = () => {
                         <ChatLoadingSkeleton/>
                         :
                         messages.map((msg, idx) => (
-                            <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-3xl py-1 pl-1 pr-6  ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
+                            <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-3xl py-1 pl-2 pr-2 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
                             &nbsp; {msg.sender_fname}: {msg.message}
                             </div>
                         ))
@@ -188,7 +204,7 @@ const ChatPanel = () => {
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            className="border p-2 rounded w-full "
+                            className="border p-2 rounded w-full dark:text-black"
                         />
                         <button
                             type='submit'
