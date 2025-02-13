@@ -6,6 +6,7 @@ import { hostUrl } from '../../config'
 import ChatLoadingSkeleton from './Loading/ChatLoadingSkeleton'
 import SendLoading from './Loading/SendLoading'
 import ThemeToggle from './common/themeToggle'
+import ScrollBar from './common/ScrollBar'
 
 const ChatPanel = () => {
     const [messages,setMessages] = useState([]);
@@ -25,7 +26,7 @@ const ChatPanel = () => {
         setIsStillSending(true);
       if (ws && newMessage.trim()) {
           ws.send(JSON.stringify({ message: newMessage, user: user, recipientId: recipientId }));   
-          setNewMessage(''); // Clear the input field
+          setNewMessage(''); // Clear the input chat field
       }   
     };
     
@@ -100,8 +101,6 @@ const ChatPanel = () => {
                'Authorization': `Bearer ${localStorage.getItem('access')}`,
            }
          }).then(response=>{
-        //    console.log("Data: ");
-        //    console.log(response.data)
            setMessages(response.data);
            setIsChatsLoading(false);
          }).catch(error=>{
@@ -110,46 +109,40 @@ const ChatPanel = () => {
         }
     },[recipientId])
 
-    
+    //auto scroll to latest chat
     useEffect(()=>{
         if(bottomRef.current){
             bottomRef.current?.scrollIntoView({ behavior:"auto" })     // behavior:"smooth"  if you want it to scroll down
         }
         
     }, [messages,isStillSending])
-    // useEffect(()=>{
-    // const scrollToSection = (id) => {
-    //     // e.preventDefault();
-    //     const element = document.getElementById(id);
-    //     const offset = 75;
-    //     const offsetPosition = element.offsetTop - offset;
-    
-    //     window.scrollTo({
-    //         top: offsetPosition,
-    //         behavior: 'smooth'
-    //     });
-    // };
-        
-    // })
+
     
 
     return (  
-        <div className='flex h-full border w-full rounded-xl relative'>
-            <div className='border w-[30%] rounded-l-xl p-5 relative space-y-6'>
+        <div className='flex h-full w-full rounded-xl relative'>
+            <div className=' w-[30%] rounded-l-xl p-5 relative space-y-4'>
+                {/* Chat Friends List */}
                 {friendList.map((friend,idx)=>(
                     <>
                     <div key={idx}                                                        
-                        className={`border hover:bg-white  flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white':'bg-transparent'}`}
+                        className={`relative hover:bg-white/20  flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
                         onClick={()=>{
                             setRecipientId(friend.id);
                             setRecipientName(`${friend.first_name} ${friend.last_name}`);
-                            setMessages([]);
+                            // setMessages([]);
                         }}           
                     >
                         <span className='w-14 h-14 border rounded-full bg-black'></span>
-                        <h2>{friend.first_name} {friend.last_name}</h2>
+                       
+                        <div className="flex flex-col w-36 border">
+                            <span className='font-bold'>{friend.first_name} {friend.last_name}</span>
+                            <span className="text-gray-400 text-sm truncate w-full border">
+                            {messages.length > 0 ? messages[messages.length-1].message : "..."}
+                            </span>
+                        </div>
                     </div>
-                
+                    
                     </>
                 ))
 
@@ -157,37 +150,38 @@ const ChatPanel = () => {
                 <h2 className='absolute bottom-20'>{user}</h2>
                 <button
                     onClick={handleLogout}
-                    className="bg-black text-white mt-11 px-4 py-2 rounded-full hover:bg-blue-600 absolute bottom-6"
+                    className="bg-black  mt-11 px-4 py-2 rounded-full hover:bg-blue-600 absolute bottom-6"
                 >
                     Logout
                 </button>
             </div>
             
             <div className='border w-[70%] rounded-r-xl p-5'>
-                <h1 className="text-white text-3xl font-bold">{recipeintName}</h1>
+                <h1 className="text-3xl font-bold">{recipeintName}</h1>
 
                
-                
-                <div className="chatContainer bg-white p-4 rounded shadow-md w-full h-[80%] overflow-y-auto mt-3">
-                {/* Render messages */}
-                { isChatsLoading ?
-                    <ChatLoadingSkeleton/>
-                    :
-                    messages.map((msg, idx) => (
-                        <div key={idx} className={`border-b border-gray-300 w-[40%] rounded-lg py-2 my-3 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto':'bg-gray-500'}`} >
-                        &nbsp; {msg.sender_fname}: {msg.message}
-                        </div>
-                    ))
-                }
-                
-                
-                <div ref={bottomRef} id='bottomDiv' className=''>
-                    { isStillSending &&
-                        <SendLoading/>
+              
+                {/* Chat Panel */}
+                <ScrollBar height='h-[80%]' className="bg-white p-4 rounded shadow-md w-full overflow-y-auto mt-3 space-y-5">
+                    {/* Render messages */}
+                    { isChatsLoading ?
+                        <ChatLoadingSkeleton/>
+                        :
+                        messages.map((msg, idx) => (
+                            <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-3xl py-1 pl-1 pr-6  ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
+                            &nbsp; {msg.sender_fname}: {msg.message}
+                            </div>
+                        ))
                     }
-                </div>
-                 
-                </div>
+                    
+                    
+                    <div ref={bottomRef} id='bottomDiv' className=''>
+                        { isStillSending &&
+                            <SendLoading/>
+                        }
+                    </div>
+                </ScrollBar>
+            
                 <form onSubmit={(e)=>handleSendMessage(e)}>
                     <div className="chatBox flex gap-2 mt-4 absolute bottom-4 w-[65%] mr-auto">
                         <input
@@ -198,7 +192,7 @@ const ChatPanel = () => {
                         />
                         <button
                             type='submit'
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            className="bg-blue-500  px-4 py-2 rounded hover:bg-blue-600"
                         >
                             Send
                         </button>    
