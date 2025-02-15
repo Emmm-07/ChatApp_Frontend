@@ -17,6 +17,7 @@ const Login = () => {
                 headers:{
                     "Content-Type" : 'application/json'
                 },
+                credentials: "include", // Important for CORS
                 body: JSON.stringify({
                     username: username,
                     password: password,
@@ -84,7 +85,7 @@ const Login = () => {
             </div>
 
             <div>
-                <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold  shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
+                <button type="submit" className="flex mt-5 w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold  shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Login</button>
             </div>
             </form>
 

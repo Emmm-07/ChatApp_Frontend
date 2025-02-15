@@ -18,8 +18,9 @@ const ChatPanel = () => {
     const [recipeintName, setRecipientName] = useState(null)
     const [isChatsLoading, setIsChatsLoading] = useState(true);
     const [isStillSending, setIsStillSending] = useState(false);
-    const storedLatestMessages = JSON.parse(localStorage.getItem('lastMessages'))
-    const [lastMessage, setLastMessage] = useState(storedLatestMessages || {})
+    const storedLatestMessages = JSON.parse(localStorage.getItem('lastMessages'));
+    const [lastMessage, setLastMessage] = useState(storedLatestMessages || {});
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const bottomRef = useRef(null);
 
@@ -103,6 +104,11 @@ const ChatPanel = () => {
                'Authorization': `Bearer ${localStorage.getItem('access')}`,
            }
          }).then(response=>{
+            setError(null)
+           if(response.data.error){
+                setError(response.data.error);
+                return
+           }
            setMessages(response.data.messages);
            setIsChatsLoading(false);
            console.log("last message: ",response.data.lastMessage)
@@ -181,7 +187,9 @@ const ChatPanel = () => {
                 <ScrollBar height='h-[80%]' className="bg-white p-4 rounded shadow-md w-full overflow-y-auto mt-3 space-y-5">
                     {/* Render messages */}
                     { isChatsLoading ?
-                        <ChatLoadingSkeleton/>
+                        !error?<ChatLoadingSkeleton/>
+                            :
+                            <div className="h-[90%] content-center text-black text-lg text-center">{error}</div>
                         :
                         messages.map((msg, idx) => (
                             <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-3xl py-1 pl-2 pr-2 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
