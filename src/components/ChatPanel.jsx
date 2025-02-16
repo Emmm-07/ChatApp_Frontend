@@ -147,17 +147,17 @@ const ChatPanel = () => {
                 {friendList.map((friend,idx)=>(
                     <>
                     <div key={friend.id}                                                        
-                        className={`relative hover:bg-white/20  flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
+                        className={`relative hover:bg-white/20 w-full flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
                         onClick={()=>{
                             setRecipientId(friend.id);
                             setRecipientName(`${friend.first_name} ${friend.last_name}`);
                             // setMessages([]);
                         }}           
                     >
-                        <span className='w-14 h-14 border rounded-full bg-black'></span>
+                        <span className='min-w-14 h-14 border rounded-full bg-black md:m-auto'></span>
                        
-                        <div className="flex flex-col w-36">
-                            <span className='font-bold'>{friend.first_name} {friend.last_name}</span>
+                        <div className="w-36 hidden md:flex flex-col transition">
+                            <span className='font-bold w-full'>{friend.first_name} {friend.last_name}</span>
                             <span className="text-gray-400 text-sm truncate w-full ">
                             {/* {messages.length > 0 ? messages[messages.length-1].message : "..."} */}
                             {lastMessage[friend.id]}
