@@ -7,6 +7,9 @@ import ChatLoadingSkeleton from './Loading/ChatLoadingSkeleton'
 import SendLoading from './Loading/SendLoading'
 import ThemeToggle from './common/themeToggle'
 import ScrollBar from './common/ScrollBar'
+import EmojiPicker from '@emoji-mart/react'
+import emojiData from '@emoji-mart/data'
+
 
 const ChatPanel = () => {
     const [messages, setMessages] = useState([]);
@@ -23,13 +26,16 @@ const ChatPanel = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const bottomRef = useRef(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [emoji, setEmoji] = useState('😂')
 
-    const handleSendMessage = (e) => {
+    const handleSendMessage = (e, haveEmoji = null) => {
         e.preventDefault();
         setIsStillSending(true);
-      if (ws && newMessage.trim()) {
-          ws.send(JSON.stringify({ message: newMessage, user: user, recipientId: recipientId }));   
-          setNewMessage(''); // Clear the input chat field
+        const messageToSend = haveEmoji ?? newMessage;    // Custom message, outside the form like: emoji
+      if (ws && (newMessage.trim()) || haveEmoji) {
+          ws.send(JSON.stringify({ message: messageToSend, user: user, recipientId: recipientId }));   
+          !haveEmoji && setNewMessage(''); // Clear the input chat field, don't if sent an emoji
       }   
     };
     
@@ -38,6 +44,14 @@ const ChatPanel = () => {
         navigate("/login");
     }
    
+    const appendEmojiToText = (emoji) => {
+        // e.preventDefault()
+        console.log("Selected Emoji:", emoji); 
+        console.log(emojiData)
+        if (!emoji || !emoji.native) return; // Prevent errors if emoji is undefined
+        setNewMessage((prev)=>prev+emoji.native);
+        // setShowEmojiPicker(false);  // Close picker after selecting
+    }
 
     useEffect(()=>{
    
@@ -180,7 +194,11 @@ const ChatPanel = () => {
             
             <div className='border w-[70%] rounded-r-xl p-5'>
                 <h1 className="text-3xl font-bold">{recipeintName}</h1>
-
+                {showEmojiPicker &&
+                <div className='absolute right-20 top-32'>
+                      <EmojiPicker data={emojiData} onEmojiSelect={(e)=>appendEmojiToText(e)}/>
+                </div>
+                }
                
               
                 {/* Chat Panel */}
@@ -205,21 +223,28 @@ const ChatPanel = () => {
                         }
                     </div>
                 </ScrollBar>
-            
+               
+               
                 <form onSubmit={(e)=>handleSendMessage(e)}>
                     <div className="chatBox flex gap-2 mt-4 absolute bottom-4 w-[65%] mr-auto">
                         <input
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            className="border p-2 rounded w-full dark:text-black"
+                            className="border p-2 w-full dark:text-black  rounded-xl"
                         />
-                        <button
-                            type='submit'
-                            className="bg-blue-500  px-4 py-2 rounded hover:bg-blue-600"
+                        <button className='absolute right-16 top-3  w-6 ' type='button' onClick={()=>setShowEmojiPicker(!showEmojiPicker)}>
+                            <img src="/images/emojiIcon.png" alt="" />
+                        </button>
+                       
+                        <button className=' content-center text-3xl cursor-pointer hover:bg-white/20 rounded-full p-1'
+                            type='button'
+                             onClick={(e)=> {
+                                setTimeout(() => handleSendMessage(e,emoji), 0); // Send emoji 
+                             }}
                         >
-                            Send
-                        </button>    
+                            {emoji}
+                        </button>
                     </div>
                 </form>
 
