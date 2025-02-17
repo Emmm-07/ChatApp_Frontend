@@ -156,12 +156,13 @@ const ChatPanel = () => {
 
     return (  
         <div className='flex h-full w-full rounded-xl relative'>
-            <div className=' w-[30%] rounded-l-xl p-5 relative space-y-4'>
+            <div className=' w-[30%] rounded-l-xl p-5 relative space-y-4 flex flex-col justify-between'>
                 {/* Chat Friends List */}
+                <div className=''>
                 {friendList.map((friend,idx)=>(
                     <>
                     <div key={friend.id}                                                        
-                        className={`relative hover:bg-white/20 w-full flex space-x-5 px-4 py-2 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
+                        className={`relative hover:bg-white/20 w-full flex space-x-5 px-4 py-2 mb-3 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
                         onClick={()=>{
                             setRecipientId(friend.id);
                             setRecipientName(`${friend.first_name} ${friend.last_name}`);
@@ -181,15 +182,41 @@ const ChatPanel = () => {
                     
                     </>
                 ))
-
                 }
-                <h2 className='absolute bottom-20'>{user}</h2>
-                <button
-                    onClick={handleLogout}
-                    className="bg-black text-white mt-11 px-4 py-2 rounded-full hover:bg-blue-600 absolute bottom-6"
-                >
-                    Logout
-                </button>
+                </div>
+                <div className='border relative flex flex-row items-center w-full justify-between'>
+                    <div className='flex flex-row'>
+                        {/* <div className='border rounded-full w-9 bg-black'>J</div> */}
+                        <h2 className=' bottom-20 border h-8 font-bold'>{user}</h2>
+                    </div>
+                    <div className='border w-9'>
+                        <img src="/images/settingsIcon.png" alt="" />
+                       
+                    </div>
+                    {/* <button
+                        onClick={handleLogout}
+                        className="bg-black text-white mt-11 px-4 py-2 rounded-full hover:bg-blue-600"
+                    >
+                        Logout
+                    </button> */}
+                     {/* Menu     */}
+                     <div id="userDropdown" className="absolute -top-36 right-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600">
+                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
+        
+                            <li>
+                                <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+                            </li>
+                            <li>
+                                <a href="#" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex flex-row">Theme
+                                    <div className='w-5 h-0'><ThemeToggle/></div>
+                                </a>
+                            </li>
+                            </ul>
+                            <div className="py-1">
+                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
+                            </div>
+                        </div>
+                </div>
             </div>
             
             <div className='border w-[70%] rounded-r-xl p-5'>
@@ -207,11 +234,11 @@ const ChatPanel = () => {
                     { isChatsLoading ?
                         !error?<ChatLoadingSkeleton/>
                             :
-                            <div className="h-[90%] content-center text-black text-lg text-center">{error}</div>
+                            <div className="h-[90%] content-center text-black text-lg text-center">{error}</div> //No Messages yet
                         :
                         messages.map((msg, idx) => (
-                            <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-3xl py-1 pl-2 pr-2 ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
-                            &nbsp; {msg.sender_fname}: {msg.message}
+                            <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-2xl py-1 pl-3 pr-2 text-sm ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
+                           {msg.message}  {/*   {msg.sender_fname}: */}
                             </div>
                         ))
                     }
