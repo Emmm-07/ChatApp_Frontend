@@ -45,7 +45,7 @@ function App() {
   <div className="App  dark:bg-[#333] w-full h-screen content-center">
     <div className="container text-black dark:text-white relative bg-red-500 dark:bg-[#333] w-[70%] h-[85%] flex flex-col items-center justify-center justify-self-center rounded-xl border-2 border-black dark:border-white ">
     <div className='absolute top-2 -left-[2.35rem] border-2 border-gray-500  border-r-0 dark:border-white rounded-l-3xl hover:bg-gray-200  dark:hover:bg-neutral-800'>
-    <ThemeToggle/>
+    {/* <ThemeToggle/> */}
     </div>
     
       <BrowserRouter>

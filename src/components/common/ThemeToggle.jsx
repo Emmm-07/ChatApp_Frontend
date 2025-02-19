@@ -1,12 +1,12 @@
 import { useState } from "react";
 import useDarkMode from "../hooks/useDarkMode";
-const ThemeToggle = () => {
+const ThemeToggle = ({className}) => {
     const [theme, setTheme] = useDarkMode();
     return (  
         <>
             <button 
                 onClick={()=>setTheme(theme === "dark" ? "light" : "dark")}
-                className="font-medium h-10 w-full text-gray-800 rounded-full hover:bg-gray-200 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                className={`${className} font-medium h-10 w-full text-gray-800 rounded-full hover:bg-gray-200 dark:text-neutral-200 dark:hover:bg-neutral-800`}
             >
             { 
                 theme === "light"? ( 

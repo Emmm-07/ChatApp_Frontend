@@ -27,7 +27,8 @@ const ChatPanel = () => {
     const navigate = useNavigate();
     const bottomRef = useRef(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [emoji, setEmoji] = useState('😂')
+    const [emoji, setEmoji] = useState('😂');
+    const [openMenu, setOpenMenu] = useState(false);
 
     const handleSendMessage = (e, haveEmoji = null) => {
         e.preventDefault();
@@ -156,9 +157,9 @@ const ChatPanel = () => {
 
     return (  
         <div className='flex h-full w-full rounded-xl relative'>
-            <div className=' w-[30%] rounded-l-xl p-5 relative space-y-4 flex flex-col justify-between'>
+            <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex flex-col justify-between'>
                 {/* Chat Friends List */}
-                <div className=''>
+                <div className='p-5'>
                 {friendList.map((friend,idx)=>(
                     <>
                     <div key={friend.id}                                                        
@@ -184,36 +185,33 @@ const ChatPanel = () => {
                 ))
                 }
                 </div>
-                <div className='border relative flex flex-row items-center w-full justify-between'>
+                <div className='border-t relative flex flex-row items-center w-full justify-between h-20 px-5 pt-4 pb-8'>
                     <div className='flex flex-row'>
                         {/* <div className='border rounded-full w-9 bg-black'>J</div> */}
-                        <h2 className=' bottom-20 border h-8 font-bold'>{user}</h2>
+                        <h2 className=' bottom-20 h-8 font-bold text-lg mt-2'>{user}</h2>
                     </div>
-                    <div className='border w-9'>
-                        <img src="/images/settingsIcon.png" alt="" />
-                       
+                    <div className='w-9 cursor-pointer' onClick={()=>setOpenMenu(!openMenu)}>
+                        <img className="hover:-rotate-12" src="/images/settingsIcon.png" alt="" />
                     </div>
-                    {/* <button
-                        onClick={handleLogout}
-                        className="bg-black text-white mt-11 px-4 py-2 rounded-full hover:bg-blue-600"
-                    >
-                        Logout
-                    </button> */}
+               
                      {/* Menu     */}
-                     <div id="userDropdown" className="absolute -top-36 right-0 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600">
+                     <div id="userDropdown" className={`${openMenu? "block" : "hidden"} absolute -top-36 right-3 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600 cursor-pointer`}>
                             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
         
                             <li>
-                                <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+                                <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                >Settings</a>
                             </li>
                             <li>
-                                <a href="#" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex flex-row">Theme
-                                    <div className='w-5 h-0'><ThemeToggle/></div>
+                                <a href="#" className="relative px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex flex-row">
+                                    <span>Theme</span>
+                                    <div className='absolute h-0 left-0 w-44 top-0'><ThemeToggle className="hover:bg-transparent dark:hover:bg-transparent flex justify-end items-start pr-5"/></div>
                                 </a>
                             </li>
                             </ul>
                             <div className="py-1">
-                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
+                                <a  onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                >Sign out</a>
                             </div>
                         </div>
                 </div>
