@@ -28,6 +28,7 @@ const Login = () => {
             if(response.ok){
                 console.log("Log in Successful");
                 if(data.access){
+                    localStorage.setItem('refresh',data.refresh); 
                     localStorage.setItem('access',data.access); 
                     localStorage.setItem('loginTime', dateNow.getTime()); 
                     

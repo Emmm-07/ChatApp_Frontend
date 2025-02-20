@@ -41,6 +41,18 @@ const ChatPanel = () => {
     };
     
     const handleLogout = () =>{
+        axios.post(`http://${hostUrl}/logout`,{
+            refresh : localStorage.getItem('refresh'),
+        },{
+            headers:{
+                'Content-Type': "application/json",
+                'Authorization': `Bearer ${localStorage.getItem('access')}`,
+            }
+          }).then(response=>{
+          }).catch(error=>{
+            console.log("Error logging out: "+ error)
+          })
+
         localStorage.clear();
         navigate("/login");
     }
@@ -171,7 +183,7 @@ const ChatPanel = () => {
                         }}           
                     >
                         <span className='min-w-14 h-14 border rounded-full bg-black md:m-auto'></span>
-                       
+                        <span>{friend.is_active?"Hello":"not hello"}</span>
                         <div className="w-36 hidden md:flex flex-col transition">
                             <span className='font-bold w-full'>{friend.first_name} {friend.last_name}</span>
                             <span className="text-gray-400 text-sm truncate w-full ">
