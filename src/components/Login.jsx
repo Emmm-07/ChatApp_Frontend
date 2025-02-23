@@ -33,6 +33,7 @@ const Login = () => {
                     localStorage.setItem('loginTime', dateNow.getTime()); 
                     
                     localStorage.setItem('fn',data.fullName);
+                    localStorage.setItem('uid',data.userID);
                     localStorage.setItem('friendList',JSON.stringify(data.friendList));
                     
                     console.log("access: "+data.access);

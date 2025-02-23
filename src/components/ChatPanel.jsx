@@ -29,78 +29,64 @@ const ChatPanel = () => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [emoji, setEmoji] = useState('😂');
     const [openMenu, setOpenMenu] = useState(false);
+    const userId = localStorage.getItem('uid');
 
     const handleSendMessage = (e, haveEmoji = null) => {
         e.preventDefault();
         setIsStillSending(true);
         const messageToSend = haveEmoji ?? newMessage;    // Custom message, outside the form like: emoji
       if (ws && (newMessage.trim()) || haveEmoji) {
-          ws.send(JSON.stringify({ message: messageToSend, user: user, recipientId: recipientId }));   
+          ws.send(JSON.stringify({ type:"private_chat_message", message: messageToSend, user: user, recipientId: recipientId }));   
           !haveEmoji && setNewMessage(''); // Clear the input chat field, don't if sent an emoji
       }   
     };
     
     const handleLogout = () =>{
-        axios.post(`http://${hostUrl}/logout`,{
-            refresh : localStorage.getItem('refresh'),
-        },{
-            headers:{
-                'Content-Type': "application/json",
-                'Authorization': `Bearer ${localStorage.getItem('access')}`,
-            }
-          }).then(response=>{
-          }).catch(error=>{
-            console.log("Error logging out: "+ error)
-          })
-
         localStorage.clear();
         navigate("/login");
     }
    
     const appendEmojiToText = (emoji) => {
-        // e.preventDefault()
         console.log("Selected Emoji:", emoji); 
         console.log(emojiData)
         if (!emoji || !emoji.native) return; // Prevent errors if emoji is undefined
         setNewMessage((prev)=>prev+emoji.native);
-        // setShowEmojiPicker(false);  // Close picker after selecting
     }
 
     useEffect(()=>{
-   
         const token = localStorage.getItem('access');
         setUser(localStorage.getItem('fn'))
         var fList = localStorage.getItem('friendList');   //GET the FriendList from backend 
         fList = JSON.parse(fList);
         setFriendList(fList);
-        // console.log("Friendlist: ")
-        // console.log(fList);
         //Initialize the recipient as the first friend or friendlist[0]
         setRecipientId(fList[0].id)
         setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`); 
 
-
         //Create websocket connection
         const socket = new WebSocket(`ws://${hostUrl}/ws/socketserver/?token=${token}`);
+        
         setWs(socket);
         socket.onopen = () => {
           console.log("WebSocket connection established");
-          };
+          socket.send(JSON.stringify({ type: "active_status_indicator", user_id: userId, status: "online" }))
+        };
           
         socket.onmessage = (event) => {
             setIsStillSending(false);
             try{
-                const msgData =  JSON.parse(event.data);
-                // console.log("Message from server: ");
-                // console.log(msgData);
-    
+                const socketData =  JSON.parse(event.data);
+                const type = socketData.type;
+                if (type === "chat_message") {
                 setMessages((prevMessages)=>{
-                //   console.log("Previous msg");
-                //   console.log(prevMessages);
-                return [...prevMessages,msgData];
-                });
-                console.log("success set messages")
-            
+                    return [...prevMessages,socketData];
+                    });
+                    console.log("success set messages")
+                }else if (type === "active_status") {
+                    console.log("FriendsList from socket: ")
+                    console.log(socketData.usersList)
+                    setFriendList(socketData.usersList.filter(user => user.id !== userId));            
+                }
             }catch(error){
                 console.log(error);
             }
@@ -117,12 +103,18 @@ const ChatPanel = () => {
     
         console.log("Hello there");
         
-        return () => socket.close();
+        return () => {
+            console.log("Socket closing")
+            if(socket.readyState === WebSocket.OPEN){
+                socket.send(JSON.stringify({ type: "active_status_indicator", user_id: userId, status: "offline" }))
+            }
+            socket.close()
+        };
     },[])
 
 
     useEffect(()=>{
-        //    Fetch messages from the API on load
+        // Fetch messages from the API on load
         setIsChatsLoading(true);
         if(recipientId!=null){
         axios.get(`http://${hostUrl}/api/messages/personal_message?recipient=${recipientId}`,{
@@ -172,7 +164,8 @@ const ChatPanel = () => {
             <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex flex-col justify-between'>
                 {/* Chat Friends List */}
                 <div className='p-5'>
-                {friendList.map((friend,idx)=>(
+                {friendList.filter(friend => friend.id != userId) // Filter out the current user
+                            .map((friend,idx)=>(
                     <>
                     <div key={friend.id}                                                        
                         className={`relative hover:bg-white/20 w-full flex space-x-5 px-4 py-2 mb-3 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
@@ -183,12 +176,11 @@ const ChatPanel = () => {
                         }}           
                     >
                         <span className='min-w-14 h-14 border rounded-full bg-black md:m-auto'></span>
-                        <span>{friend.is_active?"Hello":"not hello"}</span>
+                        <span className={`${friend.is_active?"block":"hidden"} bg-green-500 rounded-full w-8 h-3`}></span>
                         <div className="w-36 hidden md:flex flex-col transition">
                             <span className='font-bold w-full'>{friend.first_name} {friend.last_name}</span>
                             <span className="text-gray-400 text-sm truncate w-full ">
-                            {/* {messages.length > 0 ? messages[messages.length-1].message : "..."} */}
-                            {lastMessage[friend.id]}
+                                {lastMessage[friend.id]}
                             </span>
                         </div>
                     </div>
@@ -261,7 +253,6 @@ const ChatPanel = () => {
                     </div>
                 </ScrollBar>
                
-               
                 <form onSubmit={(e)=>handleSendMessage(e)}>
                     <div className="chatBox flex gap-2 mt-4 absolute bottom-4 w-[65%] mr-auto">
                         <input
@@ -284,10 +275,8 @@ const ChatPanel = () => {
                         </button>
                     </div>
                 </form>
-
-                 
+ 
             </div>
-               
         </div>
     );
 }
