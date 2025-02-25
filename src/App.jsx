@@ -1,12 +1,10 @@
-import { useState,useEffect } from 'react'
+import { useEffect } from 'react'
 import {BrowserRouter,Routes,Route, Navigate} from 'react-router-dom'
 import './index.css'
-import axios from 'axios'
 import ChatPanel from './components/ChatPanel'
 import Login from './components/Login'
 import Signup from './components/Signup'
 import PrivateRoute from './components/PrivateRoute'
-import ThemeToggle from './components/common/themeToggle'
 // to run on local network: npm run dev -- --host 0.0.0.0  
 
 function App() {
