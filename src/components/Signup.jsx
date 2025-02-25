@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {useNavigate} from "react-router-dom"
 import { Link } from "react-router-dom";
 import { hostUrl } from "../../config";
-
+import SendLoading from "./Loading/SendLoading";
 const Signup = () => {
     const [username,setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -10,9 +10,11 @@ const Signup = () => {
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const navigate = useNavigate();
+    const[isLoading, setIsLoading] = useState(false);
 
     const handleSignup = async (e) =>{
             e.preventDefault();
+            setIsLoading(true);
             try{
                 const response = await fetch(`${hostUrl}/signup`,{
                     method: "POST",
@@ -40,6 +42,7 @@ const Signup = () => {
                         console.log("No access token")
                     }
                     console.log("SUCCESSFULLY SIGNED UP")
+                    setIsLoading(false);
                 }                 
             }catch(error){
                 console.log(error)
@@ -118,9 +121,13 @@ const Signup = () => {
             </div>
 
             <div>
-                <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 mt-5 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                <button type="submit" className={`${isLoading? "bg-indigo-500":"bg-indigo-600"} flex w-full justify-center rounded-md mt-5 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+                    disabled={isLoading}
                 >
-                    Sign up
+                    {isLoading?
+                        <>Signing up... <SendLoading/> </>
+                    :
+                        "Sign Up"}
                 </button>
             </div>
         </form>

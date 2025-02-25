@@ -2,15 +2,19 @@ import { useState, useEffect } from "react";
 import { useNavigate,useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { hostUrl } from "../../config";
+import SendLoading from "./Loading/SendLoading";
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState(''); 
     const navigate = useNavigate();
     const dateNow = new Date();    
+    const[isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async(e) =>{
         e.preventDefault(); 
+        console.log("clicked Login")
+        setIsLoading(true);
         try{
             const response = await fetch(`${hostUrl}/login`,{
                 method: "POST",
@@ -40,6 +44,7 @@ const Login = () => {
                     navigate('/chat_panel');
                     console.log("already navigated");
                 }
+                setIsLoading(false);
             }             
         }catch(error){
             console.log(error);
@@ -87,7 +92,14 @@ const Login = () => {
             </div>
 
             <div>
-                <button type="submit" className="flex mt-5 w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold  shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Login</button>
+                <button type="submit" className={`${isLoading? "bg-indigo-500":"bg-indigo-600"} flex mt-5 w-full justify-center rounded-md  px-3 py-1.5 text-sm/6 font-semibold  shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+                    disabled={isLoading}
+                >
+                    {isLoading?
+                        <>Logging in... <SendLoading/> </>
+                    :
+                        "Login"}
+                </button>
             </div>
             </form>
 
