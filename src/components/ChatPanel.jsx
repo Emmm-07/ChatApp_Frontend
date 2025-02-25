@@ -2,10 +2,10 @@ import { useState,useEffect, useRef } from 'react'
 import '../index.css'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { hostUrl } from '../../config'
+import { hostUrl, wsURL } from '../../config'
 import ChatLoadingSkeleton from './Loading/ChatLoadingSkeleton'
 import SendLoading from './Loading/SendLoading'
-import ThemeToggle from './common/themeToggle'
+import ThemeToggle from './common/ThemeToggle'
 import ScrollBar from './common/ScrollBar'
 import EmojiPicker from '@emoji-mart/react'
 import emojiData from '@emoji-mart/data'
@@ -64,7 +64,7 @@ const ChatPanel = () => {
         setRecipientName(`${fList[0].first_name} ${fList[0].last_name}`); 
 
         //Create websocket connection
-        const socket = new WebSocket(`ws://${hostUrl}/ws/socketserver/?token=${token}`);
+        const socket = new WebSocket(`${wsURL}/?token=${token}`);
         
         setWs(socket);
         socket.onopen = () => {
@@ -117,7 +117,7 @@ const ChatPanel = () => {
         // Fetch messages from the API on load
         setIsChatsLoading(true);
         if(recipientId!=null){
-        axios.get(`http://${hostUrl}/api/messages/personal_message?recipient=${recipientId}`,{
+        axios.get(`${hostUrl}/api/messages/personal_message?recipient=${recipientId}`,{
            headers:{
                'Content-Type': "application/json",
                'Authorization': `Bearer ${localStorage.getItem('access')}`,
