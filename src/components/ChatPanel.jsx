@@ -9,7 +9,7 @@ import ThemeToggle from './common/ThemeToggle'
 import ScrollBar from './common/ScrollBar'
 import EmojiPicker from '@emoji-mart/react'
 import emojiData from '@emoji-mart/data'
-
+import Notification from './common/Notification'
 
 const ChatPanel = () => {
     const [messages, setMessages] = useState([]);
@@ -30,6 +30,8 @@ const ChatPanel = () => {
     const [emoji, setEmoji] = useState('😂');
     const [openMenu, setOpenMenu] = useState(false);
     const userId = localStorage.getItem('uid');
+    const [notifMessage, setNotifMessage] = useState({});
+    const [showNotification, setShowNotification] = useState(false);
 
     const handleSendMessage = (e, haveEmoji = null) => {
         e.preventDefault();
@@ -78,7 +80,17 @@ const ChatPanel = () => {
                 const socketData =  JSON.parse(event.data);
                 const type = socketData.type;
                 if (type === "chat_message") {
-                setMessages((prevMessages)=>{
+                    console.log("message received")
+                    if (socketData.sender != recipientId) {
+                        console.log("should notif")
+                        setNotifMessage({
+                            sender: socketData.sender,
+                            message: socketData.message,
+                            img: '/images/settingsIcon.png',
+                        })
+                        setShowNotification(true);
+                    }
+                    setMessages((prevMessages)=>{
                     return [...prevMessages,socketData];
                     });
                     console.log("success set messages")
@@ -161,6 +173,11 @@ const ChatPanel = () => {
 
     return (  
         <div className='flex h-full w-full rounded-xl relative'>
+            <Notification
+                className=""
+                showNotification={showNotification}
+                notifMessage={notifMessage}
+            />
             <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex flex-col justify-between'>
                 {/* Chat Friends List */}
                 <div className='p-5'>
@@ -233,16 +250,18 @@ const ChatPanel = () => {
                 {/* Chat Panel */}
                 <ScrollBar height='h-[80%]' className="bg-white p-4 rounded shadow-md w-full overflow-y-auto mt-3 space-y-5">
                     {/* Render messages */}
-                    { isChatsLoading ?
+                    { isChatsLoading ? 
                         !error?<ChatLoadingSkeleton/>
                             :
                             <div className="h-[90%] content-center text-black text-lg text-center">{error}</div> //No Messages yet
-                        :
+                        : 
                         messages.map((msg, idx) => (
-                            <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-2xl py-1 pl-3 pr-2 text-sm ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
-                           {msg.message}  {/*   {msg.sender_fname}: */}
-                            </div>
-                        ))
+                            (msg.sender == recipientId || msg.recipient == recipientId) &&  (              // Do not show message if the user is not in the window of the sender
+                                <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-2xl py-1 pl-3 pr-2 text-sm ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
+                                    {msg.message}  {/*   {msg.sender_fname}: */}
+                                </div>
+                                )
+                            ))
                     }
                     
                     
