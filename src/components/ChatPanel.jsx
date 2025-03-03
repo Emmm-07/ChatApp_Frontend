@@ -18,6 +18,7 @@ const ChatPanel = () => {
     const [user, setUser] = useState(localStorage.getItem('fn'));
     const [friendList, setFriendList] = useState([]);
     const [recipientId, setRecipientId] = useState(null);
+    const recipientIdRef = useRef(recipientId);
     const [recipeintName, setRecipientName] = useState(null)
     const [isChatsLoading, setIsChatsLoading] = useState(true);
     const [isStillSending, setIsStillSending] = useState(false);
@@ -32,6 +33,12 @@ const ChatPanel = () => {
     const userId = localStorage.getItem('uid');
     const [notifMessage, setNotifMessage] = useState({});
     const [showNotification, setShowNotification] = useState(false);
+
+    // Update the ref whenever `recipientId` changes
+    useEffect(() => {
+        recipientIdRef.current = recipientId;
+    }, [recipientId]);
+
 
     const handleSendMessage = (e, haveEmoji = null) => {
         e.preventDefault();
@@ -81,14 +88,18 @@ const ChatPanel = () => {
                 const type = socketData.type;
                 if (type === "chat_message") {
                     console.log("message received")
-                    if (socketData.sender != recipientId) {
-                        console.log("should notif")
+                    console.log("socketData sender: ",socketData.sender)
+                    console.log("recipient id: ",recipientIdRef.current)
+                    console.log("User Id: ", parseInt(userId))
+                    if (recipientIdRef.current && socketData.sender !== recipientIdRef.current && socketData.sender !== parseInt(userId)) {
                         setNotifMessage({
-                            sender: socketData.sender,
+                            senderId: socket.sender,
+                            sender: socketData.sender_fname,
                             message: socketData.message,
                             img: '/images/settingsIcon.png',
                         })
-                        setShowNotification(true);
+                        setShowNotification(false); // Reset state first
+                        setTimeout(() => setShowNotification(true), 10); // Ensure state change
                     }
                     setMessages((prevMessages)=>{
                     return [...prevMessages,socketData];
@@ -170,13 +181,19 @@ const ChatPanel = () => {
     }, [messages,isStillSending])
 
     
-
+    const handleNotifClick = () => {
+        setRecipientId(notifMessage?.senderId);
+        setRecipientName(notifMessage?.sender);
+    }
+    
     return (  
         <div className='flex h-full w-full rounded-xl relative'>
             <Notification
-                className=""
-                showNotification={showNotification}
+                className="hover:bg-slate-500"
                 notifMessage={notifMessage}
+                showNotification={showNotification}
+                setShowNotification={setShowNotification}
+                // handleNotifClick={handleNotifClick}
             />
             <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex flex-col justify-between'>
                 {/* Chat Friends List */}
@@ -189,6 +206,7 @@ const ChatPanel = () => {
                         onClick={()=>{
                             setRecipientId(friend.id);
                             setRecipientName(`${friend.first_name} ${friend.last_name}`);
+                            console.log("rec id: ",recipientId);
                             // setMessages([]);
                         }}           
                     >
@@ -258,7 +276,7 @@ const ChatPanel = () => {
                         messages.map((msg, idx) => (
                             (msg.sender == recipientId || msg.recipient == recipientId) &&  (              // Do not show message if the user is not in the window of the sender
                                 <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-2xl py-1 pl-3 pr-2 text-sm ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
-                                    {msg.message}  {/*   {msg.sender_fname}: */}
+                                    {msg.message}  
                                 </div>
                                 )
                             ))
