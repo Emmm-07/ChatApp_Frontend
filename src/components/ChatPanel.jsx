@@ -195,7 +195,7 @@ const ChatPanel = () => {
                 setShowNotification={setShowNotification}
                 // handleNotifClick={handleNotifClick}
             />
-            <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex flex-col justify-between'>
+            <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex flex-col justify-between '>
                 {/* Chat Friends List */}
                 <div className='p-5'>
                 {friendList.filter(friend => friend.id != userId) // Filter out the current user
@@ -214,12 +214,12 @@ const ChatPanel = () => {
                             {/* Image should be here */}
                             <img className='w-full h-full' src={friend.img || "/images/userIcon.png"} alt="" />
                             {/* green dot active indicator */}
-                            <span className={`${friend.is_active?"block":"hidden"} absolute bottom-0 right-0 border-2 border-white bg-green-500 rounded-full w-4 h-4`}></span>
+                            <span className={`${friend.is_active?"block":"hidden"} absolute bottom-0 right-0 bg-green-500 rounded-full w-4 h-4`}></span>
                         </span>
                         
                         <div className="w-36 hidden md:flex flex-col transition">
                             <span className='font-bold w-full'>{friend.first_name} {friend.last_name}</span>
-                            <span className="text-gray-400 text-sm truncate w-full ">
+                            <span className="text-gray-500 dark:text-gray-400 text-sm truncate w-full ">
                                 {lastMessage[friend.id]}
                             </span>
                         </div>
@@ -229,10 +229,12 @@ const ChatPanel = () => {
                 ))
                 }
                 </div>
-                <div className='border-t relative flex flex-row items-center w-full justify-between h-20 px-5 pt-4 pb-8'>
-                    <div className='flex flex-row'>
-                        {/* <div className='border rounded-full w-9 bg-black'>J</div> */}
-                        <h2 className=' bottom-20 h-8 font-bold text-lg mt-2'>{user}</h2>
+                <div className='border-t border-white/50 relative flex flex-row items-center w-full justify-between h-20 px-5 pt-4 pb-8'>
+                    <div className='flex flex-row space-x-3'>
+                        <div className='border rounded-full w-10 bg-black'>
+                            <img className='w-full h-full' src={"/images/userIcon.png"} alt="" />
+                        </div>
+                        <h2 className='hidden md:flex transition bottom-20 h-8 font-bold text-lg mt-2'>{user}</h2>
                     </div>
                     <div className='w-9 cursor-pointer' onClick={()=>setOpenMenu(!openMenu)}>
                         <img className="hover:-rotate-12" src="/images/settingsIcon.png" alt="" />
@@ -261,7 +263,7 @@ const ChatPanel = () => {
                 </div>
             </div>
             
-            <div className='border w-[70%] rounded-r-xl p-5'>
+            <div className='border border-white/20 w-[70%] rounded-r-xl p-5'>
                 <h1 className="text-3xl font-bold">{recipeintName}</h1>
                 {showEmojiPicker &&
                 <div className='absolute right-20 top-32'>
