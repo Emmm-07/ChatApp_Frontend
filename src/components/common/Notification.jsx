@@ -12,7 +12,9 @@ const Notification = ({ className, notifMessage, showNotification, setShowNotifi
             >
                 x
             </div>
-            <div className="h-full w-12 rounded-full bg-black shrink-0"></div>
+            <div className="h-full w-12 rounded-full bg-black shrink-0">
+                <img className='w-full h-full' src={notifMessage?.img || "/images/userIcon.png"} alt="" />
+            </div>
             <div className="flex-row px-2 w-full">
                 <div className="font-bold py-0 leading-4">
                     {notifMessage?.sender}

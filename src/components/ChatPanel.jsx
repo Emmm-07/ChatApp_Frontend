@@ -96,7 +96,7 @@ const ChatPanel = () => {
                             senderId: socket.sender,
                             sender: socketData.sender_fname,
                             message: socketData.message,
-                            img: '/images/settingsIcon.png',
+                            img: "/images/userIcon.png",
                         })
                         setShowNotification(false); // Reset state first
                         setTimeout(() => setShowNotification(true), 10); // Ensure state change
@@ -210,8 +210,13 @@ const ChatPanel = () => {
                             // setMessages([]);
                         }}           
                     >
-                        <span className='min-w-14 h-14 border rounded-full bg-black md:m-auto'></span>
-                        <span className={`${friend.is_active?"block":"hidden"} bg-green-500 rounded-full w-8 h-3`}></span>
+                        <span className='relative min-w-14 h-14 rounded-full bg-black md:m-auto'>
+                            {/* Image should be here */}
+                            <img className='w-full h-full' src={friend.img || "/images/userIcon.png"} alt="" />
+                            {/* green dot active indicator */}
+                            <span className={`${friend.is_active?"block":"hidden"} absolute bottom-0 right-0 border-2 border-white bg-green-500 rounded-full w-4 h-4`}></span>
+                        </span>
+                        
                         <div className="w-36 hidden md:flex flex-col transition">
                             <span className='font-bold w-full'>{friend.first_name} {friend.last_name}</span>
                             <span className="text-gray-400 text-sm truncate w-full ">
