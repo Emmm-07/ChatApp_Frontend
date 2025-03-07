@@ -41,10 +41,7 @@ function App() {
   return (
 
   <div className="App dark:bg-black bg-gradient-to-r  from-[#46ace5b3] to-[#610acfb3] w-full h-screen content-center">
-    <div className="container min-w-[400px] text-black dark:text-white relative bg-transparent w-[70%] h-[85%] flex flex-col items-center justify-center justify-self-center rounded-xl border-2 border-white/20">
-    <div className='absolute top-2 -left-[2.35rem] border-2 border-gray-500  border-r-0 dark:border-white rounded-l-3xl hover:bg-gray-200  dark:hover:bg-neutral-800'>
-    {/* <ThemeToggle/> */}
-    </div>
+    <div className="container min-w-[400px] text-black dark:text-white relative bg-white/20 w-[70%] h-[85%] flex flex-col items-center justify-center justify-self-center rounded-xl border-2 border-white/20">
     
       <BrowserRouter>
         <Routes>
