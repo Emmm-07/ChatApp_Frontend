@@ -231,7 +231,7 @@ const ChatPanel = () => {
                 </div>
                 <div className='border-t border-white/50 relative flex flex-row items-center w-full justify-between h-20 px-5 pt-4 pb-8'>
                     <div className='flex flex-row space-x-3'>
-                        <div className='border rounded-full w-10 bg-black'>
+                        <div className='border rounded-full w-10'>
                             <img className='w-full h-full' src={"/images/userIcon.png"} alt="" />
                         </div>
                         <h2 className='hidden md:flex transition bottom-20 h-8 font-bold text-lg mt-2'>{user}</h2>
@@ -282,8 +282,13 @@ const ChatPanel = () => {
                         : 
                         messages.map((msg, idx) => (
                             (msg.sender == recipientId || msg.recipient == recipientId) &&  (              // Do not show message if the user is not in the window of the sender
-                                <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-2xl py-1 pl-3 pr-2 text-sm ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
-                                    {msg.message}  
+                                <div className={`flex gap-2 ${!msg.recipient || msg.recipient == recipientId ? 'flex-row-reverse' : 'flex-row'}`}>
+                                    <div className='rounded-full flex items-end'>
+                                        <img className='w-8 h-8' src={"/images/userIcon.png"} alt="" />
+                                    </div>
+                                    <div key={idx} className={`border-b border-gray-300 break-words max-w-[45%] w-fit rounded-2xl py-1 pl-3 pr-2 text-sm ${!msg.recipient || msg.recipient == recipientId? 'bg-blue-500 ml-auto rounded-br-none':'bg-gray-500 rounded-bl-none'}`} >
+                                        <span>{msg.message}</span> 
+                                    </div>
                                 </div>
                                 )
                             ))
