@@ -10,10 +10,9 @@ import { hostUrl } from '../config'
 
 function App() {
 
-  //  const tokenLife = 86.4 * (10**6);    // 1 day in millis
-  //  const delay = 3.6 * (10**6);        // 1 hour in millis
-  const tokenLife= 3 * 60 * 1000;  // 3 minutes in milliseconds
-  const delay = 1 * 60 * 1000; // 1 minute in milliseconds
+   const tokenLife = 86.4 * (10**6);    // 1 day in millis
+   const delay = 3.6 * (10**6);        // 1 hour in millis
+
 
   useEffect(()=>{ 
     
