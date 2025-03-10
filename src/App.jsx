@@ -5,13 +5,15 @@ import ChatPanel from './components/ChatPanel'
 import Login from './components/Login'
 import Signup from './components/Signup'
 import PrivateRoute from './components/PrivateRoute'
+import { hostUrl } from '../config'
 // to run on local network: npm run dev -- --host 0.0.0.0  
 
 function App() {
 
-   const tokenLife = 86.4 * (10**6);    // 1 day in millis
-   const delay = 3.6 * (10**6);        // 1 hour in millis
-
+  //  const tokenLife = 86.4 * (10**6);    // 1 day in millis
+  //  const delay = 3.6 * (10**6);        // 1 hour in millis
+  const tokenLife= 3 * 60 * 1000;  // 3 minutes in milliseconds
+  const delay = 1 * 60 * 1000; // 1 minute in milliseconds
 
   useEffect(()=>{ 
     
@@ -23,9 +25,20 @@ function App() {
         if(loginTime && timeNow - loginTime > tokenLife){
           // localStorage.removeItem('access');
           // localStorage.removeItem('loginTime');
+          //change is_active flag to False
+          fetch(`${hostUrl}/logout`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ userId:  localStorage.getItem('uid')}), // Replace with the actual user ID
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error("Error:", error));
+
           localStorage.clear()
-          setModalContent("Session expired, please Log in again");
-          setModalShow("block");
           window.location.href = '/login';
         }
         console.log(timeNow - loginTime)
