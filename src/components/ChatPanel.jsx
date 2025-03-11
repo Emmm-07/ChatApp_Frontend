@@ -180,6 +180,19 @@ const ChatPanel = () => {
         
     }, [messages,isStillSending])
 
+    // Auto logout account if tab closed
+    useEffect(()=>{
+       const handleTabClosure = (e) => {
+            handleLogout()  
+       };
+
+       window.addEventListener("unload", handleTabClosure);
+
+       return ()=> {
+            window.removeEventListener("unload", handleTabClosure)
+       };
+
+    }, [])
     
     const handleNotifClick = () => {
         setRecipientId(notifMessage?.senderId);
