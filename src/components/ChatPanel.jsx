@@ -167,7 +167,10 @@ const ChatPanel = () => {
             })
 
          }).catch(error=>{
-           console.log("Error fetching messages: "+ error)
+            console.log("Error fetching messages: "+ error)
+            // Automatically logs out user if Tab was closed (error fetching messages)
+            alert("You have been inactive for some time. Please re-login");    
+            handleLogout() 
          })
         }
     },[recipientId])
@@ -182,15 +185,44 @@ const ChatPanel = () => {
 
     // Auto logout account if tab closed
     useEffect(()=>{
-       const handleTabClosure = (e) => {
-            handleLogout()  
-       };
+        if(!localStorage.getItem("lastReload")) {
+            var timeNow = new Date(); 
+            timeNow = timeNow.getTime();
+            localStorage.setItem("lastReload",timeNow);
+            return
+        }
 
-       window.addEventListener("unload", handleTabClosure);
+        var lastReload = localStorage.getItem("lastReload");
+        var timeNow = new Date(); 
+        timeNow = timeNow.getTime();
+        
+        console.log("lastReload: ", lastReload)
+        console.log("timeNow: ", timeNow)
+        console.log("delay: ", timeNow - lastReload)
+        
+        const handleTabClosure = (e) => {
+                var timeNow = new Date(); 
+                timeNow = timeNow.getTime();
+                var lastReload = localStorage.getItem("lastReload");
+                console.log("lastReload: ", lastReload)
+                console.log("timeNow: ", timeNow)
+                console.log("delay: ", timeNow - lastReload)
+                if(timeNow - lastReload < 2000) {               
+                    localStorage.setItem("lastReload",timeNow); 
+                    return
+                }else {                                             
+                    navigate("/login");                         // If the refresh is longer than 2000ms 
+                    console.log("HAS BEEN CLOSED")              // it will automatically logout, considered as Tab closed
+                }
+                localStorage.setItem("lastReload",timeNow);
+                
+        };
 
-       return ()=> {
-            window.removeEventListener("unload", handleTabClosure)
-       };
+        window.addEventListener("unload", handleTabClosure);
+
+        return ()=> {
+                window.removeEventListener("unload", handleTabClosure)
+        };
 
     }, [])
     
