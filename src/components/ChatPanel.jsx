@@ -242,7 +242,7 @@ const ChatPanel = () => {
             />
             <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex sm:flex-col justify-between '>
                 {/* Chat Friends List */}
-                <div className='p-5 flex flex-row sm:flex-col'>
+                <div className='sm:p-5 pt-2 pb-0 px-3 flex flex-row sm:flex-col'>
                 {friendList.filter(friend => friend.id != userId) // Filter out the current user
                             .map((friend,idx)=>(
                     <>
@@ -308,7 +308,7 @@ const ChatPanel = () => {
                 </div>
             </div>
             
-            <div className='border border-white/20 w-[70%] rounded-r-xl p-5'>
+            <div className='border border-white/20 sm:w-[70%] w-full rounded-r-xl p-5'>
                 <h1 className="text-3xl font-bold">{recipeintName}</h1>
                 {showEmojiPicker &&
                 <div className='absolute right-20 top-32'>
@@ -318,7 +318,7 @@ const ChatPanel = () => {
                
               
                 {/* Chat Panel */}
-                <ScrollBar height='h-[80%]' className="bg-white p-4 rounded shadow-md w-full overflow-y-auto mt-3 space-y-5">
+                <ScrollBar height='' className="sm:h-[80%] h-96 bg-white p-4 rounded shadow-md sm:w-full w-[95%] overflow-y-auto mt-3 space-y-5">
                     {/* Render messages */}
                     { isChatsLoading ? 
                         !error?<ChatLoadingSkeleton/>
@@ -348,7 +348,7 @@ const ChatPanel = () => {
                 </ScrollBar>
                
                 <form onSubmit={(e)=>handleSendMessage(e)}>
-                    <div className="chatBox flex gap-2 mt-4 absolute bottom-4 w-[65%] mr-auto">
+                    <div className="chatBox flex gap-2 mt-4 absolute bottom-4 sm:w-[65%] w-[90%] mr-auto">
                         <input
                             type="text"
                             value={newMessage}
