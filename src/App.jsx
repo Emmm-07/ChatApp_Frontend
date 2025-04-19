@@ -53,7 +53,7 @@ function App() {
   return (
 
   <div className="App dark:bg-black bg-gradient-to-r  from-[#46ace5b3] to-[#610acfb3] w-full h-screen content-center">
-    <div className="container min-w-[400px] text-black dark:text-white relative bg-white/20 w-[70%] h-[85%] flex flex-col items-center justify-center justify-self-center rounded-xl border-2 border-white/20">
+    <div className="container min-w-[400px] text-black dark:text-white relative bg-white/20 w-[70%] sm:h-[85%] h-screen flex flex-col items-center justify-center justify-self-center rounded-xl border-2 border-white/20">
     
       <BrowserRouter>
         <Routes>

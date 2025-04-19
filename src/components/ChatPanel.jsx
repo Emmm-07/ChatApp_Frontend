@@ -232,7 +232,7 @@ const ChatPanel = () => {
     }
     
     return (  
-        <div className='flex h-full w-full rounded-xl relative'>
+        <div className='flex sm:flex-row flex-col h-full w-full rounded-xl relative'>
             <Notification
                 className="hover:bg-slate-500"
                 notifMessage={notifMessage}
@@ -240,9 +240,9 @@ const ChatPanel = () => {
                 setShowNotification={setShowNotification}
                 // handleNotifClick={handleNotifClick}
             />
-            <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex flex-col justify-between '>
+            <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex sm:flex-col justify-between '>
                 {/* Chat Friends List */}
-                <div className='p-5'>
+                <div className='p-5 flex flex-row sm:flex-col'>
                 {friendList.filter(friend => friend.id != userId) // Filter out the current user
                             .map((friend,idx)=>(
                     <>
