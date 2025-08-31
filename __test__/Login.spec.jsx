@@ -68,14 +68,56 @@ describe('Login Page', () => {
     await user.type(passwordInput, "testpassword");
 
     await user.click(loginButton);
-    console.log("Hello")
     await waitFor(() => {
       expect(fetchSpy).toHaveBeenCalledTimes(1);
-      console.log("Mock navigate")
+      console.log("Mock api call")
     });
     await waitFor(() => {
       expect(screen.getByTestId("chat-panel")).toBeInTheDocument()
     })
     screen.debug()
   })
+
+  it('should not login the user when invalid credential', async() => {
+    const user = userEvent.setup()
+
+    const mockResponse = {
+      access: "mock-invalid-access-token",
+      refresh: "mock-invalid-refresh-token",
+      fullName: "Jane Doe",
+      userID: "321",
+      friendList: []
+    }
+    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValueOnce({
+      ok: false,
+      json: async () => mockResponse,
+    });
+
+    render(
+       <MemoryRouter initialEntries={["/login"]}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    
+    const usernameInput = screen.getByTestId("userName");
+    const passwordInput = screen.getByTestId("userPassword");
+    const loginButton = screen.getByTestId("loginBtn");
+    const errorMsg = screen.getByTestId("error-msg");
+
+    await user.type(usernameInput, "testuser");
+    await user.type(passwordInput, "testpassword");
+
+    await user.click(loginButton);
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+    await waitFor(() => {
+      expect(errorMsg).not.toHaveClass("hidden");
+    })
+    screen.debug()
+  }) 
 })

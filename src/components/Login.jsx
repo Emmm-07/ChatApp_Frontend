@@ -65,7 +65,10 @@ const Login = () => {
                 <h2 className="text-center text-2xl/9 font-bold tracking-tight text-gray-900">Sign in to your account</h2>
             </div>
             {/* Error logging in */}
-            <div className={`${hasError? "" : "hidden" } bg-red-300 w-full text-center flex flex-col py-3 text-red-700 text-sm mt-2 -mb-2 border border-red-600`}>
+            <div 
+                data-testid='error-msg' 
+                className={`${hasError? "" : "hidden" } bg-red-300 w-full text-center flex flex-col py-3 text-red-700 text-sm mt-2 -mb-2 border border-red-600`}
+                >
                 <span className="font-bold">Wrong Credentials</span>
                 <span className="">Invalid username or password</span>
             </div>
