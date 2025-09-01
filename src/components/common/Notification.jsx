@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 
 const Notification = ({ className, notifMessage, showNotification, setShowNotification, handleNotifClick }) => {
 

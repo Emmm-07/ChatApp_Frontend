@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {useNavigate} from "react-router-dom"
 import { Link } from "react-router-dom";
 import { hostUrl } from "../../config";
@@ -59,7 +59,7 @@ const Signup = () => {
     <div className="mt-3 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={handleSignup}>
             <div>
-                <label for="username" className="block text-sm/6  font-medium text-gray-900">Username</label>
+                <label htmlFor="username" className="block text-sm/6  font-medium text-gray-900">Username</label>
                     <input 
                         type="text" 
                         value={username}
@@ -67,7 +67,7 @@ const Signup = () => {
                         required 
                     className="block w-full rounded-md bg-white px-3  py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     />
-                <label for="firstname" className="block text-sm/6 mt-3 font-medium text-gray-900">First Name</label>
+                <label htmlFor="firstname" className="block text-sm/6 mt-3 font-medium text-gray-900">First Name</label>
                     <input 
                         type="text" 
                         value={firstname}
@@ -75,7 +75,7 @@ const Signup = () => {
                         required 
                     className="block w-full rounded-md bg-white px-3  py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     />
-                <label for="lastname" className="block text-sm/6  mt-3 font-medium text-gray-900">Last Name</label>
+                <label htmlFor="lastname" className="block text-sm/6  mt-3 font-medium text-gray-900">Last Name</label>
                     <input 
                         type="text" 
                         value={lastname}
@@ -84,7 +84,7 @@ const Signup = () => {
                     className="block w-full rounded-md bg-white px-3  py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     />
                 
-                <label for="email" className="block text-sm/6 mt-3  font-medium text-gray-900">Email address</label>
+                <label htmlFor="email" className="block text-sm/6 mt-3  font-medium text-gray-900">Email address</label>
                 <input 
                     type="email" 
                     value={email}
@@ -97,7 +97,7 @@ const Signup = () => {
 
             <div>
             
-                <label for="password" className="block text-sm/6 mt-3 font-medium text-gray-900">Password</label>
+                <label htmlFor="password" className="block text-sm/6 mt-3 font-medium text-gray-900">Password</label>
                 <input 
                     type="password" 
                     value={password}
@@ -108,7 +108,7 @@ const Signup = () => {
                 />
             
         
-                <label for="confirmPassword" className="block text-sm/6 mt-3 font-medium text-gray-900">Confirm Password</label>
+                <label htmlFor="confirmPassword" className="block text-sm/6 mt-3 font-medium text-gray-900">Confirm Password</label>
                 <input 
                     type="password" 
                 

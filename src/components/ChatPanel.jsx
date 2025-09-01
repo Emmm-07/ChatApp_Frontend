@@ -7,7 +7,7 @@ import ChatLoadingSkeleton from './Loading/ChatLoadingSkeleton'
 import SendLoading from './Loading/SendLoading'
 import ThemeToggle from './common/ThemeToggle'
 import ScrollBar from './common/ScrollBar'
-import EmojiPicker from '@emoji-mart/react'
+import EmojiPicker from '@emoji-mart/react' 
 import emojiData from '@emoji-mart/data'
 import Notification from './common/Notification'
 
@@ -28,7 +28,7 @@ const ChatPanel = () => {
     const navigate = useNavigate();
     const bottomRef = useRef(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [emoji, setEmoji] = useState('😂');
+    const [emoji,] = useState('😂');
     const [openMenu, setOpenMenu] = useState(false);
     const userId = localStorage.getItem('uid');
     const [notifMessage, setNotifMessage] = useState({});
@@ -185,22 +185,23 @@ const ChatPanel = () => {
 
     // Auto logout account if tab closed
     useEffect(()=>{
+        var timeNow;
         if(!localStorage.getItem("lastReload")) {
-            var timeNow = new Date(); 
+            timeNow = new Date(); 
             timeNow = timeNow.getTime();
             localStorage.setItem("lastReload",timeNow);
             return
         }
 
         var lastReload = localStorage.getItem("lastReload");
-        var timeNow = new Date(); 
+        timeNow = new Date(); 
         timeNow = timeNow.getTime();
         
         console.log("lastReload: ", lastReload)
         console.log("timeNow: ", timeNow)
         console.log("delay: ", timeNow - lastReload)
         
-        const handleTabClosure = (e) => {
+        const handleTabClosure = () => {
                 var timeNow = new Date(); 
                 timeNow = timeNow.getTime();
                 var lastReload = localStorage.getItem("lastReload");
@@ -226,11 +227,6 @@ const ChatPanel = () => {
 
     }, [])
     
-    const handleNotifClick = () => {
-        setRecipientId(notifMessage?.senderId);
-        setRecipientName(notifMessage?.sender);
-    }
-    
     return (  
         <div className='flex sm:flex-row flex-col h-full w-full rounded-xl relative'>
             <Notification
@@ -238,13 +234,12 @@ const ChatPanel = () => {
                 notifMessage={notifMessage}
                 showNotification={showNotification}
                 setShowNotification={setShowNotification}
-                // handleNotifClick={handleNotifClick}
             />
             <div className=' w-[30%] rounded-l-xl  relative space-y-4 flex sm:flex-col justify-between '>
                 {/* Chat Friends List */}
                 <div className='sm:p-5 pt-2 pb-0 px-3 flex flex-row sm:flex-col'>
                 {friendList.filter(friend => friend.id != userId) // Filter out the current user
-                            .map((friend,idx)=>(
+                            .map((friend)=>(
                     <>
                     <div key={friend.id}                                                        
                         className={`relative hover:bg-white/20 w-full flex space-x-5 px-4 py-2 mb-3 rounded-xl cursor-pointer ${recipientId==friend.id? 'bg-white/20':'bg-transparent'}`}
@@ -287,7 +282,7 @@ const ChatPanel = () => {
                
                      {/* Menu     */}
                      <div id="userDropdown" className={`${openMenu? "block" : "hidden"} absolute -top-36 right-3 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600 cursor-pointer`}>
-                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
+                            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
         
                             <li>
                                 <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -327,7 +322,7 @@ const ChatPanel = () => {
                         : 
                         messages.map((msg, idx) => (
                             (msg.sender == recipientId || msg.recipient == recipientId) &&  (              // Do not show message if the user is not in the window of the sender
-                                <div className={`flex gap-2 ${!msg.recipient || msg.recipient == recipientId ? 'flex-row-reverse' : 'flex-row'}`}>
+                                <div key={idx} className={`flex gap-2 ${!msg.recipient || msg.recipient == recipientId ? 'flex-row-reverse' : 'flex-row'}`}>
                                     <div className='rounded-full flex items-end'>
                                         <img className='w-8 h-8' src={"/images/userIcon.png"} alt="" />
                                     </div>

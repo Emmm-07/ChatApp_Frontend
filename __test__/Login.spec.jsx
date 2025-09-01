@@ -1,20 +1,10 @@
-import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
 import { render, screen, waitFor } from "@testing-library/react";
 import Login from "../src/components/Login";
 import userEvent from "@testing-library/user-event";
-import ChatPanel from "../src/components/ChatPanel";
-import { wait } from "@testing-library/user-event/dist/cjs/utils/index.js";
 
-// const mockNavigate = vi.fn();
-// vi.mock("react-router-dom", async() => {
-//   const actual = await vi.importActual("react-router-dom");
-//   return{
-//     ...actual,
-//     useNavigate: () => mockNavigate,
-//   };
-// });
+
 describe('Login Page', () => {
   beforeEach(() => {
     vi.clearAllMocks();
